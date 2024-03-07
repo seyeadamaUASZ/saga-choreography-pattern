@@ -11,6 +11,7 @@ import com.sid.gl.event.PaymentStatus;
 import com.sid.gl.repository.UserBalanceRepository;
 import com.sid.gl.repository.UserTransactionRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class PaymentService {
     private final UserBalanceRepository userBalanceRepository;
     private final UserTransactionRepository userTransactionRepository;
@@ -44,8 +46,7 @@ public class PaymentService {
         OrderRequestDTO orderRequestDTO=
                 orderEvent.getOrderRequestDTO();
 
-        PaymentRequestDTO paymentRequestDTO=
-                new PaymentRequestDTO(orderRequestDTO.getUserId(), orderRequestDTO.getOrderId(), orderRequestDTO.getAmount());
+        PaymentRequestDTO paymentRequestDTO= new PaymentRequestDTO(orderRequestDTO.getOrderId(), orderRequestDTO.getUserId(), orderRequestDTO.getAmount());
         return userBalanceRepository.findById(orderRequestDTO.getUserId())
                 .filter(userBalance -> userBalance.getPrice() > orderRequestDTO.getAmount())
                 .map(userBalance -> {

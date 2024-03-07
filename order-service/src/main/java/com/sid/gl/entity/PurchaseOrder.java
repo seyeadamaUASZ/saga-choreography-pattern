@@ -18,7 +18,6 @@ public class PurchaseOrder {
     private Integer id;
     private Integer userId;
     private Integer productId;
-
     private Integer price;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;

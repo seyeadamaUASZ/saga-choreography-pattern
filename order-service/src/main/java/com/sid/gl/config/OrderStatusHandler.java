@@ -9,6 +9,7 @@ import com.sid.gl.event.PaymentStatus;
 import com.sid.gl.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Consumer;
@@ -29,14 +30,11 @@ public class OrderStatusHandler {
 
     private void updateOrder(PurchaseOrder purchaseOrder) {
         boolean isCompleted = PaymentStatus.PAYMENT_COMPLETED.equals(purchaseOrder.getPaymentStatus());
-        OrderStatus orderStatus= null;
-        if(isCompleted)
-            orderStatus=OrderStatus.ORDER_COMPLETED;
-        else{
-            orderStatus = OrderStatus.ORDER_CANCELLED;
-            orderPublisher.publishOrderEvent(convertToDTO(purchaseOrder),orderStatus);
-        }
+        OrderStatus orderStatus = isCompleted ? OrderStatus.ORDER_COMPLETED : OrderStatus.ORDER_CANCELLED;
         purchaseOrder.setOrderStatus(orderStatus);
+        if(!isCompleted)
+            orderPublisher.publishOrderEvent(convertToDTO(purchaseOrder),orderStatus);
+
     }
 
     private OrderRequestDTO convertToDTO(PurchaseOrder purchaseOrder){
